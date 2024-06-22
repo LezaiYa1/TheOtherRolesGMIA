@@ -153,7 +153,7 @@ namespace TheOtherRoles.Patches {
                         targetHerePoint = GameObject.Instantiate<SpriteRenderer>(__instance.HerePoint, __instance.HerePoint.transform.parent);
                     }
                     targetHerePoint.gameObject.SetActive(!EvilTracker.target.Data.IsDead);
-                    GameData.PlayerInfo playerById = GameData.Instance.GetPlayerById(EvilTracker.target.PlayerId);
+                    NetworkedPlayerInfo playerById = NetworkedPlayerInfo.Instance.GetPlayerById(EvilTracker.target.PlayerId);
                     PlayerMaterial.SetColors((playerById != null) ? playerById.DefaultOutfit.ColorId : 0, targetHerePoint);
                     Vector3 pos = new Vector3(EvilTracker.target.transform.position.x, EvilTracker.target.transform.position.y, EvilTracker.target.transform.position.z);
                     pos /= MapUtilities.CachedShipStatus.MapScale;
@@ -175,7 +175,7 @@ namespace TheOtherRoles.Patches {
                             impostorHerePoint[p.PlayerId] = GameObject.Instantiate<SpriteRenderer>(__instance.HerePoint, __instance.HerePoint.transform.parent);
                         }
                         impostorHerePoint[p.PlayerId].gameObject.SetActive(!p.Data.IsDead && MeetingHud.Instance == null);
-                        GameData.PlayerInfo playerById = GameData.Instance.GetPlayerById(p.PlayerId);
+                        NetworkedPlayerInfo playerById = NetworkedPlayerInfo.Instance.GetPlayerById(p.PlayerId);
                         PlayerMaterial.SetColors(0, impostorHerePoint[p.PlayerId]);
                         Vector3 pos = new Vector3(p.transform.position.x, p.transform.position.y, p.transform.position.z);
                         pos /= MapUtilities.CachedShipStatus.MapScale;

@@ -175,7 +175,7 @@ namespace TheOtherRoles.Objects
                             count++;
                         }
                     }
-                    
+
                     foreach (var item in buff)
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.PlaceAccel, Hazel.SendOption.Reliable);
@@ -316,7 +316,7 @@ namespace TheOtherRoles.Objects
         {
             public static void Postfix(PlayerPhysics __instance)
             {
-                if (__instance.AmOwner && __instance.myPlayer.CanMove && GameData.Instance)
+                if (__instance.AmOwner && __instance.myPlayer.CanMove && NetworkedPlayerInfo.Instance)
                 {
                     if (AccelTrap.acceled.ContainsKey(__instance.myPlayer))
                         __instance.body.velocity *= CustomOptionHolder.speedAcceleration.getFloat() + 1;

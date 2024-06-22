@@ -53,8 +53,8 @@ namespace TheOtherRoles.Objects
         public void addTaskToPlayer(byte playerId)
         {
             Helpers.playerById(playerId).myTasks.Add(npt);
-            GameData.PlayerInfo pi = GameData.Instance.GetPlayerById(playerId);
-            var taskinfo = new GameData.TaskInfo((byte)npt.Id, npt.Id);
+            NetworkedPlayerInfo pi = NetworkedPlayerInfo.Instance.GetPlayerById(playerId);
+            var taskinfo = new NetworkedPlayerInfo.TaskInfo((byte)npt.Id, npt.Id);
             pi.Tasks.Add(taskinfo);
         }
 

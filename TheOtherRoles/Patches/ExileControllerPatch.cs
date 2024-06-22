@@ -13,8 +13,8 @@ namespace TheOtherRoles.Patches {
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
     [HarmonyPriority(Priority.First)]
     class ExileControllerBeginPatch {
-        public static GameData.PlayerInfo lastExiled;
-        public static void Prefix(ExileController __instance, [HarmonyArgument(0)]ref GameData.PlayerInfo exiled, [HarmonyArgument(1)]bool tie) {
+        public static NetworkedPlayerInfo lastExiled;
+        public static void Prefix(ExileController __instance, [HarmonyArgument(0)]ref NetworkedPlayerInfo exiled, [HarmonyArgument(1)]bool tie) {
             lastExiled = exiled;
 
             // Medic shield
@@ -74,7 +74,7 @@ namespace TheOtherRoles.Patches {
             }
 
             // Activate portals.
-            Portal.meetingEndsUpdate();            
+            Portal.meetingEndsUpdate();
 
             // Witch execute casted spells
             if (Witch.witch != null && Witch.futureSpelled != null && AmongUsClient.Instance.AmHost) {
@@ -122,7 +122,7 @@ namespace TheOtherRoles.Patches {
             TORMapOptions.camerasToAdd = new List<SurvCamera>();
 
             foreach (Vent vent in TORMapOptions.ventsToSeal) {
-                PowerTools.SpriteAnim animator = vent.GetComponent<PowerTools.SpriteAnim>(); 
+                PowerTools.SpriteAnim animator = vent.GetComponent<PowerTools.SpriteAnim>();
                 vent.EnterVentAnim = vent.ExitVentAnim = null;
                 Sprite newSprite = animator == null ? SecurityGuard.getStaticVentSealedSprite() : SecurityGuard.getAnimatedVentSealedSprite();
                 SpriteRenderer rend = vent.myRend;
@@ -142,7 +142,7 @@ namespace TheOtherRoles.Patches {
             TORMapOptions.ventsToSeal = new List<Vent>();
 
             EventUtility.meetingEndsUpdate();
-        }        
+        }
     }
 
     [HarmonyPatch]
@@ -181,7 +181,7 @@ namespace TheOtherRoles.Patches {
             }
         }
 
-        static void WrapUpPostfix(GameData.PlayerInfo exiled) {
+        static void WrapUpPostfix(NetworkedPlayerInfo exiled) {
             // Prosecutor win condition
             /*if (exiled != null && Lawyer.lawyer != null && Lawyer.target != null && Lawyer.isProsecutor && Lawyer.target.PlayerId == exiled.PlayerId && !Lawyer.lawyer.Data.IsDead)
                 Lawyer.triggerProsecutorWin = true;*/
@@ -219,14 +219,14 @@ namespace TheOtherRoles.Patches {
                     var rend = soul.AddComponent<SpriteRenderer>();
                     soul.AddSubmergedComponent(SubmergedCompatibility.Classes.ElevatorMover);
                     rend.sprite = Seer.getSoulSprite();
-                    
+
                     if(Seer.limitSoulDuration) {
                         FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(Seer.soulDuration, new Action<float>((p) => {
                             if (rend != null) {
                                 var tmp = rend.color;
                                 tmp.a = Mathf.Clamp01(1 - p);
                                 rend.color = tmp;
-                            }    
+                            }
                             if (p == 1f && rend != null && rend.gameObject != null) UnityEngine.Object.Destroy(rend.gameObject);
                         })));
                     }
@@ -256,7 +256,7 @@ namespace TheOtherRoles.Patches {
                 PlagueDoctor.updateDead();
 
                 FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(PlagueDoctor.immunityTime, new Action<float>((p) =>
-                { // 5Ãëáá¤«¤é¸ÐÈ¾é_Ê¼
+                { // 5ï¿½ï¿½ï¿½á¤«ï¿½ï¿½ï¿½È¾ï¿½_Ê¼
                     if (p == 1f)
                     {
                         PlagueDoctor.meetingFlag = false;

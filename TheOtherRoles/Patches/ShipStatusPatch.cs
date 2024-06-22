@@ -11,11 +11,11 @@ using TheOtherRoles.Players;
 namespace TheOtherRoles.Patches {
 
     [HarmonyPatch(typeof(ShipStatus))]
-    public class ShipStatusPatch 
+    public class ShipStatusPatch
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CalculateLightRadius))]
-        public static bool Prefix(ref float __result, ShipStatus __instance, [HarmonyArgument(0)] GameData.PlayerInfo player) {
+        public static bool Prefix(ref float __result, ShipStatus __instance, [HarmonyArgument(0)] NetworkedPlayerInfo player) {
             if ((!__instance.Systems.ContainsKey(SystemTypes.Electrical)) || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return true;
 
             if (!HideNSeek.isHideNSeekGM || (HideNSeek.isHideNSeekGM && !Hunter.lightActive.Contains(player.PlayerId))) {

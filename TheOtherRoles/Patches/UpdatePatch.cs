@@ -24,8 +24,8 @@ namespace TheOtherRoles.Patches {
 
             var dict = TagColorDict;
             dict.Clear();
-            
-            foreach (var data in GameData.Instance.AllPlayers.GetFastEnumerator())
+
+            foreach (var data in NetworkedPlayerInfo.Instance.AllPlayers.GetFastEnumerator())
             {
                 var player = data.Object;
                 string text = data.PlayerName;
@@ -37,7 +37,7 @@ namespace TheOtherRoles.Patches {
                     if (MimicA.isMorph && MimicA.mimicA == player && MimicA.mimicA != null && MimicK.mimicK != null && !MimicK.mimicK.Data.IsDead) playerName = MimicK.mimicK.Data.PlayerName;
                     if (MimicK.mimicK != null && MimicK.victim != null && MimicK.mimicK == player) playerName = MimicK.victim.Data.PlayerName;
                     var nameText = player.cosmetics.nameText;
-                
+
                     nameText.text = Helpers.hidePlayerName(localPlayer, player) ? "" : playerName;
                     nameText.color = color = amImpostor && data.Role.IsImpostor ? Palette.ImpostorRed : Color.white;
                     nameText.color = nameText.color.SetAlpha(Chameleon.visibility(player.PlayerId));
@@ -46,12 +46,12 @@ namespace TheOtherRoles.Patches {
                 {
                     color = Color.white;
                 }
-                
-                
+
+
                 dict.Add(data.PlayerId, (text, color));
             }
-            
-            if (MeetingHud.Instance != null) 
+
+            if (MeetingHud.Instance != null)
             {
                 foreach (PlayerVoteArea playerVoteArea in MeetingHud.Instance.playerStates)
                 {
@@ -88,7 +88,7 @@ namespace TheOtherRoles.Patches {
                     setPlayerNameColor(Deputy.deputy, Deputy.color);
                 }
             } else*/
-            if (Deputy.deputy != null && Deputy.deputy == localPlayer) 
+            if (Deputy.deputy != null && Deputy.deputy == localPlayer)
             {
                 setPlayerNameColor(Deputy.deputy, Deputy.color);
                 if (Sheriff.sheriff != null && Deputy.knowsSheriff) {
@@ -200,15 +200,15 @@ namespace TheOtherRoles.Patches {
             if (Jackal.jackal != null && Jackal.wasTeamRed && localPlayer.Data.Role.IsImpostor) {
                 setPlayerNameColor(Jackal.jackal, Spy.color);
             }
-            if (Fox.fox != null && localPlayer == Fox.fox) { 
+            if (Fox.fox != null && localPlayer == Fox.fox) {
                 setPlayerNameColor(localPlayer, Fox.color);
-                if (Immoralist.immoralist != null) { 
+                if (Immoralist.immoralist != null) {
                     setPlayerNameColor(Immoralist.immoralist, Immoralist.color);
                 }
             }
             if (Immoralist.immoralist != null && localPlayer == Immoralist.immoralist) {
                 setPlayerNameColor(localPlayer, Immoralist.color);
-                if (Fox.fox != null) { 
+                if (Fox.fox != null) {
                     setPlayerNameColor(Fox.fox, Immoralist.color);
                 }
             }
@@ -398,12 +398,12 @@ namespace TheOtherRoles.Patches {
             //  || Mini.mini == MimicK.mimicK && MimicK.victim != null
             // the above line deleted in 2024.3.9, specified the MimicK instead
             if (Mini.mini == null || Camouflager.camouflageTimer > 0f || Helpers.MushroomSabotageActive() || (Mini.mini == MimicA.mimicA && MimicA.isMorph) || (Mini.mini == Morphling.morphling && Morphling.morphTimer > 0f) || (Mini.mini == Ninja.ninja && Ninja.stealthed) || (Mini.mini == Sprinter.sprinter && Sprinter.sprinting) || SurveillanceMinigamePatch.nightVisionIsActive) return;
-                
+
             float growingProgress = Mini.growingProgress();
             float scale = growingProgress * 0.35f + 0.35f;
             string suffix = "";
             if (growingProgress != 1f)
-                suffix = " <color=#FAD934FF>(" + Mathf.FloorToInt(growingProgress * 18) + ")</color>"; 
+                suffix = " <color=#FAD934FF>(" + Mathf.FloorToInt(growingProgress * 18) + ")</color>";
             if (!Mini.isGrowingUpInMeeting && MeetingHud.Instance != null && Mini.ageOnMeetingStart != 0 && !(Mini.ageOnMeetingStart >= 18))
                 suffix = " <color=#FAD934FF>(" + Mini.ageOnMeetingStart + ")</color>";
 
@@ -461,7 +461,7 @@ namespace TheOtherRoles.Patches {
             if (Deputy.handcuffedKnows.ContainsKey(CachedPlayer.LocalPlayer.PlayerId) && Deputy.handcuffedKnows[CachedPlayer.LocalPlayer.PlayerId] > 0 || MeetingHud.Instance) __instance.ReportButton.Hide();
             else if (!__instance.ReportButton.isActiveAndEnabled) __instance.ReportButton.Show();
         }
-         
+
         static void updateVentButton(HudManager __instance)
         {
             if (GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return;
@@ -492,7 +492,7 @@ namespace TheOtherRoles.Patches {
         static void Postfix(HudManager __instance)
         {
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return;
-            
+
             EventUtility.Update();
 
             CustomButton.HudUpdate();

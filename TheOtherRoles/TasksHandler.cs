@@ -10,7 +10,7 @@ namespace TheOtherRoles {
     [HarmonyPatch]
     public static class TasksHandler {
 
-        public static Tuple<int, int> taskInfo(GameData.PlayerInfo playerInfo, bool isResult = false) {
+        public static Tuple<int, int> taskInfo(NetworkedPlayerInfo playerInfo, bool isResult = false) {
             int TotalTasks = 0;
             int CompletedTasks = 0;
             if (!playerInfo.Disconnected && playerInfo.Tasks != null &&
@@ -22,8 +22,8 @@ namespace TheOtherRoles {
                 bool isTaskMasterEx = TaskMaster.taskMaster && TaskMaster.taskMaster == playerInfo.Object && TaskMaster.isTaskComplete;
                 if (isOldTaskMasterEx || (!isResult && isTaskMasterEx))
                 {
-                    TotalTasks = CompletedTasks = GameOptionsManager.Instance.currentNormalGameOptions.NumCommonTasks + 
-                    GameOptionsManager.Instance.currentNormalGameOptions.NumShortTasks + 
+                    TotalTasks = CompletedTasks = GameOptionsManager.Instance.currentNormalGameOptions.NumCommonTasks +
+                    GameOptionsManager.Instance.currentNormalGameOptions.NumShortTasks +
                     GameOptionsManager.Instance.currentNormalGameOptions.NumLongTasks;
                 }
                 else
@@ -38,15 +38,15 @@ namespace TheOtherRoles {
             return Tuple.Create(CompletedTasks, TotalTasks);
         }
 
-        [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
+        [HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.RecomputeTaskCounts))]
         private static class GameDataRecomputeTaskCountsPatch {
-            private static bool Prefix(GameData __instance) {
-               
+            private static bool Prefix(NetworkedPlayerInfo __instance) {
+
 
                 var totalTasks = 0;
                 var completedTasks = 0;
-                
-                foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
+
+                foreach (var playerInfo in NetworkedPlayerInfo.Instance.AllPlayers.GetFastEnumerator())
                 {
                     if (playerInfo.Object
                         && playerInfo.Object.hasAliveKillingLover() // Tasks do not count if a Crewmate has an alive killing Lover
@@ -64,17 +64,17 @@ namespace TheOtherRoles {
                     totalTasks += playerTotal;
                     completedTasks += playerCompleted;
                 }
-                
+
                 __instance.TotalTasks = totalTasks;
                 __instance.CompletedTasks = completedTasks;
                 return false;
             }
         }
 
-        [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
+        [HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.CompleteTask))]
         private static class GameDataCompleteTaskPatch
         {
-            private static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl pc, [HarmonyArgument(1)] uint taskId)
+            private static void Postfix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] PlayerControl pc, [HarmonyArgument(1)] uint taskId)
             {
                 if (AmongUsClient.Instance.AmHost && !pc.Data.IsDead && TaskMaster.isTaskMaster(pc.PlayerId))
                 {

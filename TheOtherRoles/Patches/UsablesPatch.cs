@@ -19,7 +19,7 @@ namespace TheOtherRoles.Patches {
     [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
     public static class VentCanUsePatch
     {
-        public static bool Prefix(Vent __instance, ref float __result, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] ref bool canUse, [HarmonyArgument(2)] ref bool couldUse) {
+        public static bool Prefix(Vent __instance, ref float __result, [HarmonyArgument(0)] NetworkedPlayerInfo pc, [HarmonyArgument(1)] ref bool canUse, [HarmonyArgument(2)] ref bool couldUse) {
             if (GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return true;
             float num = float.MaxValue;
             PlayerControl @object = pc.Object;
@@ -38,12 +38,12 @@ namespace TheOtherRoles.Patches {
                 if (SubmergedCompatibility.getInTransition()) {
                     __result = float.MaxValue;
                     return canUse = couldUse = false;
-                }                
+                }
                 switch (__instance.Id) {
                     case 9:  // Cannot enter vent 9 (Engine Room Exit Only Vent)!
                         if (CachedPlayer.LocalPlayer.PlayerControl.inVent) break;
                         __result = float.MaxValue;
-                        return canUse = couldUse = false;                    
+                        return canUse = couldUse = false;
                     case 14: // Lower Central
                         __result = float.MaxValue;
                         couldUse = roleCouldUse && !pc.IsDead && (@object.CanMove || @object.inVent);
@@ -65,10 +65,10 @@ namespace TheOtherRoles.Patches {
                     canUse = false;
                     couldUse = false;
                     __result = num;
-                    return false; 
+                    return false;
                 } else {
                     // Reduce the usable distance to reduce the risk of gettings stuck while trying to jump into the box if it's placed near objects
-                    usableDistance = 0.4f; 
+                    usableDistance = 0.4f;
                 }
             }
 
@@ -117,7 +117,7 @@ namespace TheOtherRoles.Patches {
             if (!canUse) return false; // No need to execute the native method as using is disallowed anyways
 
             bool isEnter = !CachedPlayer.LocalPlayer.PlayerControl.inVent;
-            
+
             if (__instance.name.StartsWith("JackInTheBoxVent_")) {
                 __instance.SetButtons(isEnter && canMoveInVents);
                 MessageWriter writer = AmongUsClient.Instance.StartRpc(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.UseUncheckedVent, Hazel.SendOption.Reliable);
@@ -181,13 +181,13 @@ namespace TheOtherRoles.Patches {
                 {
                     showAnimation = false;
                 }
-                
+
                 // Deputy handcuff update.
                 if (Deputy.handcuffedPlayers.Contains(CachedPlayer.LocalPlayer.PlayerId)) {
                     Deputy.setHandcuffedKnows();
                     return false;
                 }
-                
+
                 // Use an unchecked kill command, to allow shorter kill cooldowns etc. without getting kicked
                 MurderAttemptResult res = Helpers.checkMurderAttemptAndKill(CachedPlayer.LocalPlayer.PlayerControl, __instance.currentTarget, showAnimation: showAnimation);
                 // Handle blank kill
@@ -307,7 +307,7 @@ namespace TheOtherRoles.Patches {
 
     [HarmonyPatch(typeof(Console), nameof(Console.CanUse))]
     public static class ConsoleCanUsePatch {
-        public static bool Prefix(ref float __result, Console __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse) {
+        public static bool Prefix(ref float __result, Console __instance, [HarmonyArgument(0)] NetworkedPlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse) {
             canUse = couldUse = false;
             if (Swapper.swapper != null && Swapper.swapper == CachedPlayer.LocalPlayer.PlayerControl)
                 return !__instance.TaskTypes.Any(x => x == TaskTypes.FixLights || x == TaskTypes.FixComms);
@@ -343,7 +343,7 @@ namespace TheOtherRoles.Patches {
         static void Postfix(SwitchMinigame __instance) {
             // Block Swapper from fixing lights. One could also just delete the PlayerTask, but I wanted to do it the same way as with coms for now.
             if ((Swapper.swapper != null && Swapper.swapper == CachedPlayer.LocalPlayer.PlayerControl) ||
-                Madmate.madmate.Any(x => x.PlayerId == CachedPlayer.LocalPlayer.PlayerId) || 
+                Madmate.madmate.Any(x => x.PlayerId == CachedPlayer.LocalPlayer.PlayerId) ||
                 (CreatedMadmate.createdMadmate != null && CreatedMadmate.createdMadmate == CachedPlayer.LocalPlayer.PlayerControl)) {
                 __instance.Close();
             }
@@ -366,7 +366,7 @@ namespace TheOtherRoles.Patches {
                         text.gameObject.SetActive(false);
                         text.transform.localScale = Vector3.one * 0.75f;
                         text.transform.localPosition = new Vector3(-0.75f, -0.23f, 0f);
-                    
+
                     }
                 }
 
@@ -384,11 +384,11 @@ namespace TheOtherRoles.Patches {
 
             static void Postfix(VitalsMinigame __instance) {
                 // Hacker show time since death
-                
+
                 if (Hacker.hacker != null && Hacker.hacker == CachedPlayer.LocalPlayer.PlayerControl && Hacker.hackerTimer > 0) {
                     for (int k = 0; k < __instance.vitals.Length; k++) {
                         VitalsPanel vitalsPanel = __instance.vitals[k];
-                        GameData.PlayerInfo player = vitalsPanel.PlayerInfo;
+                        NetworkedPlayerInfo player = vitalsPanel.PlayerInfo;
 
                         // Hacker update
                         if (vitalsPanel.IsDead) {
@@ -425,7 +425,7 @@ namespace TheOtherRoles.Patches {
                 players = new Dictionary<SystemTypes, List<Color>>();
                 bool commsActive = false;
                     foreach (PlayerTask task in CachedPlayer.LocalPlayer.PlayerControl.myTasks.GetFastEnumerator())
-                        if (task.TaskType == TaskTypes.FixComms) commsActive = true;       
+                        if (task.TaskType == TaskTypes.FixComms) commsActive = true;
 
 
                 if (!__instance.isSab && commsActive)
@@ -464,7 +464,7 @@ namespace TheOtherRoles.Patches {
                                     num2++;
                                     DeadBody bodyComponent = collider2D.GetComponent<DeadBody>();
                                     if (bodyComponent) {
-                                        GameData.PlayerInfo playerInfo = GameData.Instance.GetPlayerById(bodyComponent.ParentId);
+                                        NetworkedPlayerInfo playerInfo = NetworkedPlayerInfo.Instance.GetPlayerById(bodyComponent.ParentId);
                                         if (playerInfo != null) {
                                             var color = Palette.PlayerColors[playerInfo.DefaultOutfit.ColorId];
                                             if (Hacker.onlyColorType)
@@ -774,7 +774,7 @@ namespace TheOtherRoles.Patches {
 
 
             isLightsOut = CachedPlayer.LocalPlayer.PlayerControl.myTasks.ToArray().Any(x => x.name.Contains("FixLightsTask")) || Trickster.lightsOutTimer > 0;
-            bool ignoreNightVision = CustomOptionHolder.camsNoNightVisionIfImpVision.getBool() && Helpers.hasImpVision(GameData.Instance.GetPlayerById(CachedPlayer.LocalPlayer.PlayerId)) || CachedPlayer.LocalPlayer.Data.IsDead;
+            bool ignoreNightVision = CustomOptionHolder.camsNoNightVisionIfImpVision.getBool() && Helpers.hasImpVision(NetworkedPlayerInfo.Instance.GetPlayerById(CachedPlayer.LocalPlayer.PlayerId)) || CachedPlayer.LocalPlayer.Data.IsDead;
             bool nightVisionEnabled = CustomOptionHolder.camsNightVision.getBool();
 
             if (isLightsOut && !nightVisionIsActive && nightVisionEnabled && !ignoreNightVision) {  // only update when something changed!
@@ -826,7 +826,7 @@ namespace TheOtherRoles.Patches {
                     }
                     // Dead Bodies
                     foreach (DeadBody deadBody in GameObject.FindObjectsOfType<DeadBody>()) {
-                        var colorId = GameData.Instance.GetPlayerById(deadBody.ParentId).Object.Data.DefaultOutfit.ColorId;
+                        var colorId = NetworkedPlayerInfo.Instance.GetPlayerById(deadBody.ParentId).Object.Data.DefaultOutfit.ColorId;
                         SpriteRenderer component = deadBody.bodyRenderers.FirstOrDefault();
                         component.material.SetColor("_BackColor", Palette.ShadowColors[colorId]);
                         component.material.SetColor("_BodyColor", Palette.PlayerColors[colorId]);
@@ -846,7 +846,7 @@ namespace TheOtherRoles.Patches {
         public static void Postfix(PlayerControl __instance, SpriteRenderer rend) {
             if (!nightVisionIsActive) return;
             foreach (DeadBody deadBody in GameObject.FindObjectsOfType<DeadBody>()) {
-                foreach (SpriteRenderer component in new SpriteRenderer[2] { deadBody.bodyRenderers.FirstOrDefault(), deadBody.bloodSplatter }) { 
+                foreach (SpriteRenderer component in new SpriteRenderer[2] { deadBody.bodyRenderers.FirstOrDefault(), deadBody.bloodSplatter }) {
                     component.material.SetColor("_BackColor", Palette.ShadowColors[11]);
                     component.material.SetColor("_BodyColor", Palette.PlayerColors[11]);
                 }

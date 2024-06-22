@@ -28,7 +28,7 @@ namespace TheOtherRoles.Patches {
                 bottomLeft = new Vector3(xpos / 2, ypos/2, -61f);
 
                 foreach (PlayerControl p in CachedPlayer.AllPlayers) {
-                    GameData.PlayerInfo data = p.Data;
+                    NetworkedPlayerInfo data = p.Data;
                     PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(__instance.PlayerPrefab, FastDestroyableSingleton<HudManager>.Instance.transform);
                     playerPrefab = __instance.PlayerPrefab;
                     p.SetPlayerMaterialColors(player.cosmetics.currentBodySprite.BodySprite);
@@ -260,7 +260,7 @@ namespace TheOtherRoles.Patches {
                 new Vector3(-22.7174f, -7.0523f, 0.0071f),
                 new Vector3(-16.5819f, -2.1575f, 0.0022f),
                 new Vector3(9.399f, -9.7127f, -0.0097f),
-                new Vector3(7.3723f, 1.7373f, 0.0017f), 
+                new Vector3(7.3723f, 1.7373f, 0.0017f),
                 new Vector3(22.0777f, -7.9315f, -0.0079f),
                 new Vector3(-15.3916f, -9.3659f, -0.0094f),
                 new Vector3(-16.1207f, -0.1746f, -0.0002f),
@@ -294,7 +294,7 @@ namespace TheOtherRoles.Patches {
             }
             TORMapOptions.firstKillName = "";
 
-            if (Helpers.isAirship() && CustomOptionHolder.airshipOptimize.getBool() && Helpers.hasImpVision(GameData.Instance.GetPlayerById(CachedPlayer.LocalPlayer.PlayerId)))
+            if (Helpers.isAirship() && CustomOptionHolder.airshipOptimize.getBool() && Helpers.hasImpVision(NetworkedPlayerInfo.Instance.GetPlayerById(CachedPlayer.LocalPlayer.PlayerId)))
             {
                 var obj = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].gameObject;
                 OneWayShadows oneWayShadow = obj.transform.FindChild("Shadow").FindChild("LedgeShadow").GetComponent<OneWayShadows>();
@@ -417,7 +417,7 @@ namespace TheOtherRoles.Patches {
             __instance.RoleText.gameObject.SetActive(false);
             __instance.RoleBlurbText.gameObject.SetActive(false);
             __instance.ourCrewmate.gameObject.SetActive(false);
-           
+
         }
 
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CreatePlayer))]
